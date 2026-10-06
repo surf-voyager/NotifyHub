@@ -263,6 +263,12 @@ class CoreTests(unittest.TestCase):
             process.terminate.assert_called_once()
         self.assertEqual(list((self.folder / "audio").glob("job-*")), [])
 
+    def test_client_retries_windows_startup_icmp(self):
+        from notifyhub.client import send
+        with patch("notifyhub.client.exchange", side_effect=[ConnectionResetError(), {"id": "startup", "status": "completed"}]):
+            response = send("127.0.0.1", 39393, "windows", "startup", request_id="startup", timeout=2)
+            self.assertEqual(response["status"], "completed")
+
     def test_standalone_client_matches_module(self):
         self.assertEqual((ROOT / "client/notify.py").read_bytes(), (ROOT / "src/notifyhub/client.py").read_bytes())
 

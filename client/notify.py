@@ -37,12 +37,14 @@ def send(host, port, method, text, title="", secret="", wait=False, timeout=240,
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.connect((host, port))
         response = None
-        for attempt in range(3):
+        ack_deadline = min(deadline, time.monotonic() + 10)
+        while time.monotonic() < ack_deadline:
             try:
-                response = exchange(sock, host, port, message, secret)
+                response = exchange(sock, host, port, message, secret, timeout=min(2, max(0.1, ack_deadline-time.monotonic())))
                 break
-            except socket.timeout:
-                continue
+            except (socket.timeout, ConnectionResetError):
+                # Windows can send ICMP port-unreachable while the worker starts.
+                time.sleep(0.2)
         if response is None:
             raise TimeoutError("No ACK: check server, firewall, packet validation and authentication")
         while wait and response["status"] in ("accepted", "running"):
