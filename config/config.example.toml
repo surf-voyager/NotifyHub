@@ -1,0 +1,48 @@
+# Relative paths resolve against this file, not the current working directory.
+[runtime]
+python = "../.venv/Scripts/python.exe"
+pythonw = "../.venv/Scripts/pythonw.exe"
+powershell = "${SystemRoot}/System32/WindowsPowerShell/v1.0/powershell.exe"
+wsl_executable = "${SystemRoot}/System32/wsl.exe"
+wsl_distribution = ""
+
+[app]
+data_dir = "${LOCALAPPDATA}/NotifyHub"
+
+[udp]
+bind = "0.0.0.0"
+port = 39393
+max_packet_bytes = 1200
+queue_size = 100
+dedup_seconds = 86400
+
+[auth]
+secret_file = "./udp.key"
+# Empty means any authenticated remote peer. Loopback may send without HMAC.
+allowed_sources = []
+max_clock_skew_seconds = 120
+
+[ntfy]
+enabled = true
+server = "https://ntfy.sh"
+topic = ""
+token_file = ""
+direct = true
+timeout_seconds = 15
+
+[speech]
+enabled = true
+voice = "zh-CN-XiaoxiaoNeural"
+rate = "+0%"
+volume = "+0%"
+direct = true
+synthesis_timeout_seconds = 45
+playback_timeout_seconds = 180
+
+[windows]
+enabled = true
+app_id = "NotifyHub.Desktop"
+default_title = "NotifyHub"
+
+[hooks]
+# Reserved for local business logic. No remote command execution.

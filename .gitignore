@@ -1,0 +1,11 @@
+.venv/
+config/local.toml
+config/*.key
+config/*token*
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.runtime/
+reports/local-*
+build/
+dist/
