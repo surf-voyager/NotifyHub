@@ -102,3 +102,8 @@ preflight 在无效代理环境下检查 ntfy 直连和真实 edge-tts 合成，
 
 先在托盘取消 Start at login 并 Exit。删除开始菜单 NotifyHub 快捷方式；按需要删除源码目录与 data_dir。
 通知身份位于 HKCU/Software/Classes/AppUserModelId/NotifyHub.Desktop。防火墙规则可运行 scripts/firewall.ps1 -Remove -RemoteAddress 127.0.0.1 删除。
+
+## WSL 中使用 shell 客户端
+
+直接调用：`sh scripts/notify.sh --host 127.0.0.1 --method windows --text "测试" --wait`。仅需 python3。
+当 WSL 网络不可用时，可以把 NOTIFYHUB_PYTHON 设为 Windows 项目 .venv/Scripts/python.exe 的 /mnt 路径。脚本自动通过 wslpath 转换客户端路径，报文从 Windows 本机发送，host 使用 127.0.0.1，无需签名。此模式也支持源码克隆在 WSL 文件系统内。
