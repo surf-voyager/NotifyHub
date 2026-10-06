@@ -26,4 +26,4 @@ winrt-Windows.Data.Xml.Dom==3.2.1; sys_platform == "win32"
 winrt-Windows.Foundation==3.2.1; sys_platform == "win32"
 winrt-Windows.UI.Notifications==3.2.1; sys_platform == "win32"
 yarl==1.25.1
-setuptools==84.0.0
+winrt-Windows.Foundation.Collections==3.2.1; sys_platform == "win32"

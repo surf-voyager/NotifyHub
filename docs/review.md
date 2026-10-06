@@ -8,3 +8,5 @@
 
 执行门槛：核心测试全部通过，Windows API 可用，ntfy 与 edge-tts 在无效代理条件下真实直连成功，Git 内容无本机设置。门槛达到后自动进行全新 clone、安装、通知注册、启动及本机验收。
 实施信心是基于这些证据的工程判断，不表示外部服务永不失败。外部主机实测和用户是否实际看见/听见通知应分别记录，不能由 API 返回值替代。
+
+部署验收发现并修复：win32con 不提供 ERROR_ALREADY_EXISTS（改用 winerror）；PyWinRT 带应用 ID 的方法名为 create_toast_notifier_with_id；首次查询新应用通知设置可能返回 ElementNotFound，允许首次提交后创建记录；后台日志显式 force=True 防止已有 root handler 使文件为空。均增加对应回归与真实测试。

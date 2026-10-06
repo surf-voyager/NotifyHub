@@ -24,6 +24,8 @@ class Server:
         self.handlers = handlers or {"ntfy": lambda m: ntfy.send(m, cfg["ntfy"]), "speech": lambda m: speech.send(m, cfg, stop), "windows": lambda m: windows.send(m, cfg["windows"])}
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
+            if hasattr(socket, "SIO_UDP_CONNRESET"):
+                self.socket.ioctl(socket.SIO_UDP_CONNRESET, False)
             if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
                 self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
             self.socket.bind((cfg["udp"]["bind"], cfg["udp"]["port"]))
@@ -110,7 +112,10 @@ class Server:
                     # Valid authenticated client errors are shown in local logs.
                     logging.warning("Rejected request from %s: %s", address[0], str(error)[:100])
                     continue
-                self.socket.sendto(json.dumps(response, ensure_ascii=False).encode("utf-8"), address)
+                try:
+                    self.socket.sendto(json.dumps(response, ensure_ascii=False).encode("utf-8"), address)
+                except OSError:
+                    logging.warning("UDP response could not be delivered to %s", address[0])
         finally:
             self.socket.close()
             self.stop.set()
@@ -128,7 +133,7 @@ def worker_main(config_path, stop, ready):
     cfg = load(config_path)
     data = Path(cfg["app"]["data_dir"])
     data.mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(level=logging.INFO, handlers=[RotatingFileHandler(data / "service.log", maxBytes=2_000_000, backupCount=3, encoding="utf-8")], format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(force=True, level=logging.INFO, handlers=[RotatingFileHandler(data / "service.log", maxBytes=2_000_000, backupCount=3, encoding="utf-8")], format="%(asctime)s %(levelname)s %(message)s")
     try:
         speech.clean_orphans(data / "audio")
         Server(cfg, stop).run(ready)

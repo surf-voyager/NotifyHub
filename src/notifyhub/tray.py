@@ -81,20 +81,22 @@ class Controller:
             return "Running" if self.ready.is_set() else "Starting"
 
 def run(cfg):
-    import win32event, win32api, win32con
+    import win32event, win32api, win32con, winerror
     import pystray
     from PIL import Image, ImageDraw
     data = Path(cfg["app"]["data_dir"])
     data.mkdir(parents=True, exist_ok=True)
     from logging.handlers import RotatingFileHandler
-    logging.basicConfig(level=logging.INFO, handlers=[RotatingFileHandler(data / "tray.log", maxBytes=1_000_000, backupCount=2, encoding="utf-8")])
+    logging.basicConfig(force=True, level=logging.INFO, handlers=[RotatingFileHandler(data / "tray.log", maxBytes=1_000_000, backupCount=2, encoding="utf-8")])
     tag = identity(cfg)
     mutex = win32event.CreateMutex(None, False, "Local\\NotifyHub-" + tag)
-    if win32api.GetLastError() == win32con.ERROR_ALREADY_EXISTS:
+    if win32api.GetLastError() == winerror.ERROR_ALREADY_EXISTS:
         mutex.Close()
         return
     quit_event = win32event.CreateEvent(None, True, False, "Local\\NotifyHub-Quit-" + tag)
     win32event.ResetEvent(quit_event)
+    restart_event = win32event.CreateEvent(None, True, False, "Local\\NotifyHub-Restart-" + tag)
+    win32event.ResetEvent(restart_event)
     controller = Controller(cfg)
     icon = None
     def guarded(action):
@@ -133,6 +135,9 @@ def run(cfg):
             if win32event.WaitForSingleObject(quit_event, 500) == win32event.WAIT_OBJECT_0:
                 quit_app()
                 break
+            if win32event.WaitForSingleObject(restart_event, 0) == win32event.WAIT_OBJECT_0:
+                win32event.ResetEvent(restart_event)
+                guarded(controller.restart)
             with controller.lock:
                 if controller.process and not controller.process.is_alive():
                     now = time.monotonic()
@@ -151,6 +156,7 @@ def run(cfg):
         controller.halt()
         (data / "processes.json").unlink(missing_ok=True)
         quit_event.Close()
+        restart_event.Close()
         mutex.Close()
 
 def export_history(cfg):

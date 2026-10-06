@@ -91,6 +91,12 @@ preflight 在无效代理环境下检查 ntfy 直连和真实 edge-tts 合成，
 自动测试覆盖认证、UTF-8 大小、去重、恢复、队列隔离、代理绕行、音频清理及配置迁移。
 部署验收结果保存至忽略的 reports/local-acceptance.json，自省记录在 docs/review.md。
 日志和请求历史位于配置的 data_dir；托盘 Recent requests 会导出最近状态。
+真实用户会话验收：运行 scripts/acceptance.py（发布、播放测试通知），以及 scripts/lifecycle.py（重启、退出并恢复运行）。
+本地控制也可用 `python -m notifyhub --config config/local.toml --restart` 或 `--stop`，与托盘调用相同后台管理逻辑。
+
+可在本地配置添加 firewall.rules，每条包含 name（NotifyHub- 前缀）、interface_alias、remote_addresses。明确批准来源后，从管理员 PowerShell 执行 scripts/configure-firewall.ps1。默认规则为空，不自动放行。
+防火墙脚本使用具名规则，可以通过 scripts/firewall.ps1 -Name <规则名> -Remove -RemoteAddress 127.0.0.1 删除。
+手动退出/重启测试不证明操作系统注销后启动，注册表启动命令已按普通进程验证。
 
 ## 卸载
 

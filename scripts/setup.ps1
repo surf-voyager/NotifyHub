@@ -1,4 +1,4 @@
-param([string]$PythonExecutable = "python", [string]$Topic = "", [string]$DataDir = "", [switch]$NoRegister)
+﻿param([string]$PythonExecutable = "python", [string]$Topic = "", [string]$DataDir = "", [switch]$NoRegister)
 $ErrorActionPreference = "Stop"
 $setupArgs = @((Join-Path $PSScriptRoot "setup.py"))
 if ($Topic) { $setupArgs += @("--topic", $Topic) }

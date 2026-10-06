@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $config = Join-Path $projectRoot "config/local.toml"
 $bootstrap = Join-Path $projectRoot ".venv/Scripts/python.exe"

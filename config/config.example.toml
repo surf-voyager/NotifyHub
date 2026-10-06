@@ -46,3 +46,7 @@ default_title = "NotifyHub"
 
 [hooks]
 # Reserved for local business logic. No remote command execution.
+
+[firewall]
+# Optional local rules: name, interface_alias, remote_addresses.
+rules = []

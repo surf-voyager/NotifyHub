@@ -7,7 +7,7 @@ name = "notifyhub"
 version = "0.1.0"
 requires-python = ">=3.11"
 description = "Windows tray notification gateway with UDP clients"
-dependencies = ["pystray==0.19.5", "Pillow==12.3.0", "httpx==0.28.1", "edge-tts==7.2.8", "pywin32>=311; sys_platform == 'win32'", "winrt-Windows.UI.Notifications>=3.2; sys_platform == 'win32'", "winrt-Windows.Data.Xml.Dom>=3.2; sys_platform == 'win32'", "winrt-Windows.Foundation>=3.2; sys_platform == 'win32'"]
+dependencies = ["pystray==0.19.5", "Pillow==12.3.0", "httpx==0.28.1", "edge-tts==7.2.8", "pywin32>=311; sys_platform == 'win32'", "winrt-Windows.UI.Notifications>=3.2; sys_platform == 'win32'", "winrt-Windows.Data.Xml.Dom>=3.2; sys_platform == 'win32'", "winrt-Windows.Foundation>=3.2; sys_platform == 'win32'", "winrt-Windows.Foundation.Collections==3.2.1; sys_platform == 'win32'"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

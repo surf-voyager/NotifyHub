@@ -65,6 +65,13 @@ class CoreTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate(raw(item), ("192.0.2.1", 3), self.cfg)
 
+    def test_windows_runtime_constants_and_overload(self):
+        import winerror
+        from winrt.windows.ui.notifications import ToastNotificationManager
+        self.assertEqual(winerror.ERROR_ALREADY_EXISTS, 183)
+        notifier = ToastNotificationManager.create_toast_notifier_with_id("NotifyHub.Test")
+        self.assertIsNotNone(notifier)
+
     def test_windows_shortcut_identity_api(self):
         import pythoncom
         from win32com.shell import shell

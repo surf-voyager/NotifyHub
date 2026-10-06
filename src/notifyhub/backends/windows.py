@@ -13,10 +13,16 @@ def send(message, cfg):
     toast = ToastNotification(xml)
     failures = []
     toast.add_failed(lambda sender, args: failures.append(str(args.error_code)))
-    notifier = ToastNotificationManager.create_toast_notifier(cfg["app_id"])
-    setting = notifier.setting
-    if int(setting) != 0:
-        raise RuntimeError(f"Windows notifications disabled: setting={setting}")
+    notifier = ToastNotificationManager.create_toast_notifier_with_id(cfg["app_id"])
+    try:
+        setting = notifier.setting
+    except OSError as error:
+        # A freshly registered desktop app may not have a settings record yet.
+        if error.winerror != -2147023728:
+            raise
+    else:
+        if int(setting) != 0:
+            raise RuntimeError(f"Windows notifications disabled: setting={setting}")
     notifier.show(toast)
     # Give async failures a short observation window; retain handles for callbacks.
     threading.Event().wait(0.5)
