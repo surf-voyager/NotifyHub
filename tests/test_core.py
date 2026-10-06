@@ -209,6 +209,19 @@ class CoreTests(unittest.TestCase):
             server.socket.close()
             server.store.close()
 
+    def test_authenticated_invalid_backend_returns_error(self):
+        stop = threading.Event()
+        server = Server(self.cfg, stop, {m: lambda x: "done" for m in ("windows", "speech", "ntfy")})
+        thread = threading.Thread(target=server.run)
+        thread.start()
+        try:
+            response = client_send(*server.address, "invalid", "text", timeout=3)
+            self.assertEqual(response["status"], "rejected")
+            self.assertEqual(response["detail"], "invalid_method")
+        finally:
+            stop.set()
+            thread.join(5)
+
     def test_udp_and_backend_isolation(self):
         stop = threading.Event()
         release = threading.Event()

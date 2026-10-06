@@ -102,7 +102,7 @@ class Server:
                 except socket.timeout:
                     continue
                 try:
-                    validated = validate(raw, address, self.cfg)
+                    validated = validate(raw, address, self.cfg, require_content=False)
                     try:
                         response = self.handle(raw, address)
                     except ValueError as error:

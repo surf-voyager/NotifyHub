@@ -15,7 +15,7 @@ def sign(message, secret):
     message["auth"] = hmac.new(secret.encode(), canonical(message), hashlib.sha256).hexdigest()
     return message
 
-def validate(raw, address, cfg):
+def validate(raw, address, cfg, require_content=True):
     if len(raw) > cfg["udp"]["max_packet_bytes"]:
         raise ValueError("packet_too_large")
     message = json.loads(raw.decode("utf-8"), parse_constant=lambda value: (_ for _ in ()).throw(ValueError("invalid_number")))
@@ -40,7 +40,7 @@ def validate(raw, address, cfg):
     op = message.get("op", "notify")
     if op not in ("notify", "status", "ping"):
         raise ValueError("invalid_operation")
-    if op == "notify":
+    if op == "notify" and require_content:
         method = message.get("method")
         if method not in METHODS:
             raise ValueError("invalid_method")
